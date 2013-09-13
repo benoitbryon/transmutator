@@ -1,0 +1,109 @@
+############
+Transmutator
+############
+
+Transmutator is a general purpose migration framework. 
+It focuses on automating actions you perform to upgrade (or downgrade) a
+product.
+
+.. warning::
+
+   This project is experimental. At this stage, it just describes concepts.
+   Perhaps the concepts are implemented by some existing tools.
+
+A typical migration for a web service could be:
+
+* ask admin for confirmation
+* enable maintenance page
+* stop frontends
+* backup data
+* update configuration
+* provision machines (upgrade software)
+* migrate databases
+* restart frontends
+* run smoketests
+* disable maintenance page.
+
+
+***********************
+Upgrades are migrations
+***********************
+
+Provisioning is not enough to manage upgrades.
+Database migrations are just a part of the upgrade procedure.
+We need migration scripts and workflows.
+
+
+*****************
+Migration scripts
+*****************
+
+* Recipes are libraries that provide classes with forward() and backward()
+  methods.
+* Dispatchers manage lists of actions to run and watch/notify stop conditions.
+* Migration scripts load, configure and run recipes.
+* Collecter grabs the list of unapplied migration scripts.
+
+Migration scripts are small shell scripts that accept standardized arguments:
+they "forward" by default, they optionally implement "--backward". The
+language in which scripts are written does not matter.
+
+There is two kind of migration scripts:
+
+* atomic mutations, migrations that focus on one thing;
+* orchestration, migrations that focus on running smaller scripts.
+
+An upgrade from a release to another is typically encapsulated in an
+orchestration-type script, which itself groups atomic-type scripts.
+
+
+*******************
+Migration workflows
+*******************
+
+Automating everything is hard, sometimes impossible, sometimes unwanted.
+A migration procedure is a workflow: it passes from one state to another via
+transitions. Most transitions can be automated, but some may require human
+interaction.
+
+Example of human interactions:
+
+* setup SSH keys
+* update configuration where defaults are not suitable
+* review and confirm some actions
+* perform actions that have not been automated yet
+
+
+********************************
+Iterative deployment development
+********************************
+
+When you start a project, you do not want to spend days to get the perfect
+deployment workflow. In fact, you usually cannot even get a suitable deployment
+workflow at first. Partly because you do not know how to deploy things you
+have not developed yet. Partly because you want to focus on proof of concepts,
+where automated deployment is not top priority.
+
+Transmutator allows you to setup interactive workflows, where you can tell the
+user to perform actions you have not automated yet.
+
+
+********************************
+Remote-control multiple machines
+********************************
+
+On distributed architectures, you have to orchestrate migrations on multiple
+machines. Transmutator runs high-level migration scripts that use your favorite
+remote-control tools, such as fabric or salt.
+
+
+****************
+From DEV to PROD
+****************
+
+Migrations are part of the development process. Several developers can
+contribute to migrations, concurrently. Transmutator is made to reproduce
+migrations over every environments, from DEV to PROD.
+The differences between DEV (tends to be monolithic) and PROD (tends to be
+distributed) are managed via configuration. Transmutator supposes you manage
+architecture as configuration.

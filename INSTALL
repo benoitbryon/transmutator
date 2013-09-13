@@ -1,0 +1,17 @@
+############
+Installation
+############
+
+This code is open-source. See :doc:`/about/license` for details.
+
+If you want to contribute to the code and get a development environment, you
+should go to :doc:`/contribute/index` documentation.
+
+Install the package with your favorite Python installer. As an example, with
+pip:
+
+.. code:: sh
+
+   pip install git+https://github.com/benoitbryon/transmutator.git#egg=transmutator
+
+See :doc:`api/index` for auto-generated API documentation.

@@ -1,0 +1,3 @@
+recursive-include transmutator *
+global-exclude *.pyc
+include AUTHORS CHANGELOG INSTALL LICENSE README VERSION
