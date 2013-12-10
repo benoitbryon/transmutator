@@ -11,7 +11,7 @@ DESCRIPTION = """General purpose migration (upgrade, downgrade) framework."""
 README = open(os.path.join(here, 'README')).read()
 VERSION = open(os.path.join(here, 'VERSION')).read().strip()
 PACKAGES = [NAME]
-REQUIREMENTS = ['setuptools']
+REQUIREMENTS = ['setuptools', 'xal']
 ENTRY_POINTS = {
     'console_scripts': [
         'transmute = %s.cli:transmute' % NAME,

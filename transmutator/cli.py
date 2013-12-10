@@ -14,5 +14,6 @@ def transmute(arguments=sys.argv[1:], program=sys.argv[0]):
                         action='version',
                         version=transmutator.__version__)
     parser.parse_args(arguments)
-    sys.stderr.write('Not implemented yet\n')
-    sys.exit(1)
+    orchestrator = transmutator.Orchestrator()
+    orchestrator.run_mutations()
+    sys.exit(0)
