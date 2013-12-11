@@ -107,3 +107,85 @@ migrations over every environments, from DEV to PROD.
 The differences between DEV (tends to be monolithic) and PROD (tends to be
 distributed) are managed via configuration. Transmutator supposes you manage
 architecture as configuration.
+
+
+***************************
+Features / workflows / demo
+***************************
+
+At last, here is implementation... `transmutator` tries to implement the
+concepts above. It is a proof of concept. If you feel something is going wrong,
+please tell us ;)
+
+.. note:: This is kind of a plan for some tests.
+
+.. note:: All features are not be implemented yet.
+
+* `transmutator` provides ``transmute`` command.
+
+* ``transmute`` without arguments runs mutations "forward".
+
+* ``transmute`` reads mutations in `mutations directory`: ``mutations`` folder
+  in current directory (pwd).
+
+* here is a sample "mutations" folder tree:
+
+  .. code:: txt
+
+     mutations
+     ├── 0001_hello_world.py
+     ├── 0040_1234.sh
+     ├── 1.2
+     │   └── 0093_print_version.sh
+     ├── 1.3
+     │   └── 0060_print_version.sh
+     ├── development
+     │   └── 0077_refactoring.py
+     └── recurrent
+         └── 0050_syncdb.sh
+
+* A mutation file must be executable. Else, it is ignored.
+
+* All mutation scripts/binaries implement the `mutation interface`:
+
+  * no arguments means "forward"
+  * accept ``--backward`` argument to run "backward" instead of "forward"
+  * that's all for now. Later, additional options such as ``help`` may be
+    added.
+
+* Mutations can be grouped by "release/version". In the example above:
+
+  * ``0001_hello_world.py`` and ``0040_1234.sh`` have "no release".
+  * ``1.2/0093_print_version.sh`` has release "1.2"
+  * ``1.3/0060_print_version.sh`` has release "1.3"
+  * mutations in ``development/`` have not been released yet, their content
+    may change during developement.
+  * mutations in ``recurrent/`` are special kind of mutations, they are to
+    be executed for every release.
+
+* Mutations are executed in order:
+
+  * first ordering criteria is "release/version" groups:
+
+    * ``1.2/0093_print_version.sh`` is executed before
+      ``1.3/0060_print_version.sh``
+
+    * mutations in ``development/`` are executed at the end. "development" is
+      a special release, the latest.
+
+    * mutations in ``recurrent/`` are considered part of every release, so
+      they are run for each release.
+    
+  * then, in a release, mutations are sorted by filename:
+
+    * ``0001_hello_world.py`` is executed before ``0040_1234.sh``
+
+    * ``recurrent/0050_syncdb.sh`` is executed before
+      ``1.3/0060_print_version.sh``
+
+* Once mutations have been executed, they are not executed again. Except
+  recurrent and in-development mutations:
+
+  * recurrent mutations are executed (forward) for each release
+  * in-development mutations are always executed. But they are run "backward"
+    then "forward" (undo/redo).

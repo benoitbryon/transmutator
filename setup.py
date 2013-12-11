@@ -8,7 +8,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 
 NAME = 'transmutator'
 DESCRIPTION = """General purpose migration (upgrade, downgrade) framework."""
-README = open(os.path.join(here, 'README')).read()
+README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(here, 'VERSION')).read().strip()
 PACKAGES = [NAME]
 REQUIREMENTS = ['setuptools', 'xal']
