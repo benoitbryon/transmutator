@@ -24,7 +24,7 @@ class ReadMeTestCase(unittest.TestCase):
 
         """
         # Run build.
-        source = open(os.path.join(project_dir, 'README')).read()
+        source = open(os.path.join(project_dir, 'README.rst')).read()
         writer_name = 'html'
         stderr_backup = sys.stderr
         sys.stderr = StringIO()
