@@ -45,10 +45,3 @@ class TransmuteTestCase(unittest.TestCase):
         self.assertEqual(output.stdout, '')
         self.assertEqual(output.stderr,
                          transmutator.__version__ + '\n')
-
-    def test_no_args(self):
-        """`transmute` without arguments confesses it is not implemented."""
-        with sys_output() as output:
-            self.assertEqual(self.transmute(), 1)
-        self.assertEqual(output.stdout, '')
-        self.assertEqual(output.stderr, 'Not implemented yet\n')

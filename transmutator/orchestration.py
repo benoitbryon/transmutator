@@ -54,7 +54,11 @@ class Orchestrator(object):
         return mutation.startswith('development')
 
     def collect_mutations(self):
-        """Return a list of all available mutations, whatever their status."""
+        """Iterates over all available mutations, whatever their status.
+
+        The return iterator is not sorted.
+
+        """
         for (dirpath, dirnames, filenames) in os.walk(self.mutations_dir):
             for filename in filenames:
                 relative_dirname = dirpath[len(self.mutations_dir):]
@@ -80,31 +84,64 @@ class Orchestrator(object):
         doing = os.path.join(self.doing_dir, mutation)
         if not os.path.isdir(os.path.dirname(doing)):
             os.makedirs(os.path.dirname(doing))
-        shutil.move(todo, doing)
+        if self.is_recurrent(mutation):
+            shutil.copy2(todo, doing)
+        else:
+            shutil.move(todo, doing)
         if todo_dir != self.todo_dir and not os.listdir(todo_dir):
             shutil.rmtree(todo_dir)
 
-    def todo_mutations(self):
-        files = []
-        for (dirpath, dirnames, filenames) in os.walk(self.todo_dir):
-            for filename in filenames:
-                relative_dirname = dirpath[len(self.todo_dir):]
-                relative_dirname = relative_dirname.lstrip(os.path.sep)
-                relative_filename = os.path.join(relative_dirname, filename)
-                files.append((filename, relative_filename))
+    def todo_releases(self):
+        """Return ordered list of releases to process."""
+        releases = []
+        noname_release = False
+        development_release = False
+        for name in os.listdir(self.todo_dir):
+            if os.path.isdir(os.path.join(self.todo_dir, name)):
+                if name == 'development':
+                    development_release = True
+                elif name == 'recurrent':
+                    pass
+                else:
+                    releases.append(name)
+            else:
+                noname_release = True
+        releases.sort()
+        if noname_release:
+            releases.insert(0, '')
+        if development_release:
+            releases.append('development')
+        return releases
+
+    def todo_recurrent(self):
+        """Return ordered list of recurrent mutations."""
+        files = os.listdir(os.path.join(self.todo_dir, 'recurrent'))
         files.sort()
-        files = [relative_filename for f, relative_filename in files]
+        return [os.path.join('recurrent', name) for name in files]
+
+    def todo_mutations(self, release):
+        files = []
+        recurrent_mutations = self.todo_recurrent()
+        absolute_release = os.path.join(self.todo_dir, release)
+        for filename in os.listdir(absolute_release):
+            if os.path.isfile(os.path.join(absolute_release, filename)):
+                relative_filename = os.path.join(release, filename)
+                files.append((filename, relative_filename))
+        for recurrent in recurrent_mutations:
+            files.append((recurrent[len('recurrent/'):], recurrent))
+        files.sort()
+        files = [mutation for f, mutation in files]
         return files
 
     def forward_mutation(self, mutation):
-        print('FORWARD mutation "{name}"'.format(name=mutation))
+        print('## FORWARD mutation "{name}"'.format(name=mutation))
         session = LocalSession()
         sh = session.sh
         result = sh.run(os.path.join(self.doing_dir, mutation))
         print(result.stdout)
 
     def backward_mutation(self, mutation):
-        print('BACKWARD mutation "{name}"'.format(name=mutation))
+        print('## BACKWARD mutation "{name}"'.format(name=mutation))
         session = LocalSession()
         sh = session.sh
         result = sh.run([
@@ -128,9 +165,10 @@ class Orchestrator(object):
         done = os.path.join(self.done_dir, mutation)
         if not os.path.isdir(os.path.dirname(done)):
             os.makedirs(os.path.dirname(done))
-        shutil.move(doing, done)
-        if doing_dir != self.doing_dir and not os.listdir(doing_dir):
-            shutil.rmtree(doing_dir)
+        if not self.is_recurrent(mutation):
+            shutil.move(doing, done)
+            if doing_dir != self.doing_dir and not os.listdir(doing_dir):
+                shutil.rmtree(doing_dir)
 
     def error_mutation(self, mutation):
         """Register error and warn user."""
@@ -139,11 +177,16 @@ class Orchestrator(object):
     def run_mutations(self):
         for mutation in self.collect_mutations():
             self.register_mutation(mutation)
-        for mutation in self.todo_mutations():
-            self.start_mutation(mutation)
-            try:
-                self.run_mutation(mutation)
-            except:
-                self.error_mutation(mutation)
-            else:
-                self.success_mutation(mutation)
+        for release in self.todo_releases():
+            print('#### Processing release "{name}" ####'.format(name=release))
+            for mutation in self.todo_mutations(release):
+                self.start_mutation(mutation)
+                try:
+                    self.run_mutation(mutation)
+                except:
+                    self.error_mutation(mutation)
+                else:
+                    self.success_mutation(mutation)
+        recurrent_dir = os.path.join(self.todo_dir, 'recurrent')
+        if os.path.exists(recurrent_dir) and os.listdir(recurrent_dir):
+            shutil.rmtree(recurrent_dir)

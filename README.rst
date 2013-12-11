@@ -130,7 +130,7 @@ please tell us ;)
 
 * here is a sample "mutations" folder tree:
 
-  .. code:: txt
+  .. code:: text
 
      mutations
      ├── 0001_hello_world.py
