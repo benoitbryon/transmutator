@@ -1,40 +1,92 @@
 # -*- coding: utf-8 -*-
 """Python packaging."""
 import os
+import sys
+
 from setuptools import setup
 
 
+#: Absolute path to directory containing setup.py file.
 here = os.path.abspath(os.path.dirname(__file__))
+#: Boolean, ``True`` if environment is running Python version 2.
+IS_PYTHON2 = sys.version_info[0] == 2
 
 NAME = 'transmutator'
-DESCRIPTION = """General purpose migration (upgrade, downgrade) framework."""
+DESCRIPTION = "General purpose migration (upgrade, downgrade) framework."
 README = open(os.path.join(here, 'README.rst')).read()
 VERSION = open(os.path.join(here, 'VERSION')).read().strip()
-PACKAGES = [NAME]
-REQUIREMENTS = ['setuptools', 'xal']
+AUTHOR = u'Benoît Bryon'
+EMAIL = 'benoit@marmelune.net'
+URL = 'https://{name}.readthedocs.org/'.format(name=NAME)
+CLASSIFIERS = [
+    'License :: OSI Approved :: BSD License',
+    'Development Status :: 1 - Planning',
+    'Intended Audience :: Developers',
+    'Programming Language :: Python :: 2.7',
+]
+LICENSE = 'BSD'
+KEYWORDS = [
+    'migration',
+    'evolution',
+    'upgrade',
+    'downgrade',
+    'shell',
+    'deployment',
+]
+PACKAGES = [NAME.replace('-', '_')]
+REQUIREMENTS = [
+    'setuptools',
+    'xal',
+]
 ENTRY_POINTS = {
     'console_scripts': [
-        'transmute = %s.cli:transmute' % NAME,
+        'transmute = {name}.cli:transmute'.format(name=PACKAGES[0]),
     ]
 }
-CLASSIFIERS = ['License :: OSI Approved :: BSD License',
-               'Development Status :: 1 - Planning',
-               'Intended Audience :: Developers',
-               'Programming Language :: Python :: 2.7']
+SETUP_REQUIREMENTS = []
+TEST_REQUIREMENTS = []
+CMDCLASS = {}
 
 
-if __name__ == '__main__':  # Don't run setup() when we import this module.
-    setup(name=NAME,
-          version=VERSION,
-          description=DESCRIPTION,
-          long_description=README,
-          classifiers=CLASSIFIERS,
-          keywords='migration evolution mutation upgrade downgrade release',
-          author='Benoît Bryon',
-          author_email='benoit@marmelune.net',
-          url='https://github.com/benoitbryon/%s' % NAME,
-          packages=PACKAGES,
-          include_package_data=True,
-          zip_safe=False,
-          install_requires=REQUIREMENTS,
-          entry_points=ENTRY_POINTS)
+# Tox integration.
+from setuptools.command.test import test as TestCommand
+
+
+class Tox(TestCommand):
+    """Test command that runs tox."""
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import tox  # import here, cause outside the eggs aren't loaded.
+        errno = tox.cmdline(self.test_args)
+        sys.exit(errno)
+
+
+TEST_REQUIREMENTS.append('tox')
+CMDCLASS['test'] = Tox
+
+
+if __name__ == '__main__':  # Do not run setup() when we import this module.
+    setup(
+        name=NAME,
+        version=VERSION,
+        description=DESCRIPTION,
+        long_description=README,
+        classifiers=CLASSIFIERS,
+        keywords=' '.join(KEYWORDS),
+        author=AUTHOR,
+        author_email=EMAIL,
+        url=URL,
+        license=LICENSE,
+        packages=PACKAGES,
+        include_package_data=True,
+        zip_safe=False,
+        install_requires=REQUIREMENTS,
+        entry_points=ENTRY_POINTS,
+        tests_require=TEST_REQUIREMENTS,
+        cmdclass=CMDCLASS,
+        setup_requires=SETUP_REQUIREMENTS,
+    )

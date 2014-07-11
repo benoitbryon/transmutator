@@ -1,66 +1,63 @@
-# Makefile for development.
-# See INSTALL and docs/dev.txt for details.
-VENV := $(shell echo $${VIRTUAL_ENV-var/venv})
-ROOT_DIR = $(shell pwd)
-BIN_DIR = $(VENV)/bin
-PYTHON=$(BIN_DIR)/python
-PIP = $(BIN_DIR)/pip
-NOSE = $(BIN_DIR)/nosetests
-PROJECT = $(shell $(PYTHON) -c "import setup; print setup.NAME")
+# Reference card for usual actions in development environment.
+#
+# For standard installation of django-ticketoffice as a library, see INSTALL.
+#
+# For details about django-ticketoffice's development environment, see
+# CONTRIBUTING.rst.
+#
+PIP = pip
+TOX = tox
 
-install: develop
 
+.PHONY: all help develop clean distclean maintainer-clean test tox documentation readme release
+
+
+#: help - Display callable targets.
+help:
+	@echo "Reference card for usual actions in development environment."
+	@echo "Here are available targets:"
+	@egrep -o "^#: (.+)" [Mm]akefile  | sed 's/#: /* /'
+
+
+#: develop - Install minimal development utilities such as tox.
 develop:
-	@mkdir -p $(ROOT_DIR)/var
-	virtualenv $(VENV)
 	$(PIP) install -e ./
-	$(PIP) install nose rednose docutils coverage sphinxcontrib-testbuild flake8
+	$(PIP) install tox
+
 
 clean:
-	find $(ROOT_DIR)/ -name "*.pyc" -delete
-	find $(ROOT_DIR)/ -name ".noseids" -delete
+	find . -name "*.pyc" -delete
+	find . -name "__pycache__" -delete
+	find . -name ".noseids" -delete
 
 
+#: distclean - Remove local builds, such as *.egg-info.
 distclean: clean
-	rm -rf $(ROOT_DIR)/*.egg-info
+	rm -rf *.egg
+	rm -rf *.egg-info
 
 
-test: test-app test-pep8
+#: maintainer-clean - Remove almost everything that can be re-generated.
+maintainer-clean: distclean
+	rm -rf build/
+	rm -rf dist/
+	rm -rf .tox/
 
 
-test-app:
-	@mkdir -p $(ROOT_DIR)/var/test/
-	$(NOSE) -c $(ROOT_DIR)/etc/nose.cfg tests $(PROJECT)
-	mv $(ROOT_DIR)/.coverage $(ROOT_DIR)/var/test/app.coverage
+#: test - Run test suites.
+test:
+	$(TOX)
 
 
-test-pep8:
-	$(BIN_DIR)/flake8 $(PROJECT)
+#: documentation - Build documentation (Sphinx, README, ...)
+documentation: readme
 
 
-test-documentation:
-	$(NOSE) -c $(ROOT_DIR)/etc/nose.cfg sphinxcontrib.testbuild.tests
+#: readme - Build standalone documentation files (README, CONTRIBUTING...).
+readme:
+	$(TOX) -e readme
 
 
-documentation: sphinx-apidoc sphinx-html
-
-
-# Remove auto-generated API documentation files.
-# Files will be restored during sphinx-build, if "autosummary_generate" option
-# is set to True in Sphinx configuration file.
-sphinx-apidoc-clean:
-	find docs/api/ -type f \! -name "index.txt" -delete
-
-
-sphinx-apidoc: sphinx-apidoc-clean
-	$(BIN_DIR)/sphinx-apidoc --output-dir $(ROOT_DIR)/docs/api/ --suffix txt $(PROJECT)
-
-
-sphinx-html:
-	if [ ! -d docs/_static ]; then mkdir docs/_static; fi
-	make --directory=docs clean html doctest
-
-
+#: release - Tag and push to PyPI.
 release:
-	$(PIP) install zest.releaser
-	$(BIN_DIR)/fullrelease
+	$(TOX) -e release
