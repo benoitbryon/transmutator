@@ -3,7 +3,7 @@ Contributing
 ############
 
 This document provides guidelines for people who want to contribute to
-`django-ticketoffice`.
+`transmutator`.
 
 
 **************
@@ -42,12 +42,12 @@ Use topic branches
 Fork, clone
 ***********
 
-Clone `django-ticketoffice` repository (adapt to use your own fork):
+Clone `transmutator` repository (adapt to use your own fork):
 
 .. code:: sh
 
-   git clone git@github.com:novapost/django-ticketoffice.git
-   cd django-ticketoffice/
+   git clone git@github.com:benoitbryon/transmutator.git
+   cd transmutator/
 
 
 *************
@@ -75,7 +75,7 @@ See also ``make help``.
 
 .. target-notes::
 
-.. _`bugtracker`: https://github.com/novapost/django-ticketoffice/issues
+.. _`bugtracker`: https://github.com/benoitbryon/transmutator/issues
 .. _`rebase`: http://git-scm.com/book/en/Git-Branching-Rebasing
 .. _`merge-based rebase`: http://tech.novapost.fr/psycho-rebasing-en.html
 .. _`pip`: https://pypi.python.org/pypi/pip/
