@@ -1,16 +1,10 @@
-# Local binaries (they are generated).
-/bin/
-
 # Python files.
 *.pyc
 *.pyo
 *.egg-info
 
-# Libraries.
-/lib/
+# Tox files.
+/.tox/
 
 # Data files.
 /var/
-
-# Editor(s) temporary files.
-.*.swp
