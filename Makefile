@@ -13,7 +13,7 @@ install: develop
 develop:
 	@mkdir -p $(ROOT_DIR)/var
 	virtualenv $(VENV)
-	$(PYTHON) setup.py develop
+	$(PIP) install -e ./
 	$(PIP) install nose rednose docutils coverage sphinxcontrib-testbuild flake8
 
 clean:
