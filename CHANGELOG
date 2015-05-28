@@ -2,7 +2,23 @@ Changelog
 =========
 
 
-0.1 (unreleased)
+0.1 (2015-05-28)
 ----------------
 
-Initial release.
+Initial release, as a proof of concept.
+
+* Feature #6 - ``transmute`` command run migrations forward. Mutations are
+  collected in ``mutations/`` folder from current working directory.
+
+* Feature #17 - Mutations are executed only once.
+
+* Feature #16 - Mutations are executed in predictable order.
+
+* Feature #13 - Mutations can be grouped by release or version.
+
+* Feature #15 - Mutations in "recurrent" release are always executed.
+
+* Feature #14 - Mutations in "development" release are always executed,
+  backward if necessary, then forward.
+
+* Feature #4 - ``transmute --version`` shows version of `transmutator`.
