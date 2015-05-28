@@ -1,43 +1,44 @@
 # Reference card for usual actions in development environment.
 #
-# For standard installation of django-ticketoffice as a library, see INSTALL.
+# For standard installation of transmutator as a library, see INSTALL.
 #
-# For details about django-ticketoffice's development environment, see
-# CONTRIBUTING.rst.
+# For details about transmutator's development environment, see CONTRIBUTING.rst.
 #
 PIP = pip
 TOX = tox
 
 
-.PHONY: all help develop clean distclean maintainer-clean test tox documentation readme release
-
-
 #: help - Display callable targets.
+.PHONY: help
 help:
 	@echo "Reference card for usual actions in development environment."
 	@echo "Here are available targets:"
 	@egrep -o "^#: (.+)" [Mm]akefile  | sed 's/#: /* /'
 
 
-#: develop - Install minimal development utilities such as tox.
+#: develop - Install minimal development utilities.
+.PHONY: develop
 develop:
-	$(PIP) install -e ./
-	$(PIP) install tox
+	$(PIP) install -e .[test]
 
 
+#: clean - Basic cleanup, mostly temporary files.
+.PHONY: clean
 clean:
 	find . -name "*.pyc" -delete
+	find . -name '*.pyo' -delete
 	find . -name "__pycache__" -delete
-	find . -name ".noseids" -delete
 
 
 #: distclean - Remove local builds, such as *.egg-info.
+.PHONY: distclean
 distclean: clean
 	rm -rf *.egg
 	rm -rf *.egg-info
 
 
 #: maintainer-clean - Remove almost everything that can be re-generated.
+.PHONY: maintainer-clean
 maintainer-clean: distclean
 	rm -rf build/
 	rm -rf dist/
@@ -45,19 +46,29 @@ maintainer-clean: distclean
 
 
 #: test - Run test suites.
+.PHONY: test
 test:
 	$(TOX)
 
 
 #: documentation - Build documentation (Sphinx, README, ...)
-documentation: readme
+.PHONY: documentation
+documentation: sphinx readme
+
+
+#: sphinx - Build Sphinx documentation (docs).
+.PHONY: sphinx
+sphinx:
+	$(TOX) -e sphinx
 
 
 #: readme - Build standalone documentation files (README, CONTRIBUTING...).
+.PHONY: readme
 readme:
 	$(TOX) -e readme
 
 
 #: release - Tag and push to PyPI.
+.PHONY: release
 release:
 	$(TOX) -e release

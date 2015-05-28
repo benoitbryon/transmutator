@@ -1,0 +1,21 @@
+#################################
+Alternatives and related projects
+#################################
+
+This document presents other projects that provide similar or complementary
+functionalities. It focuses on differences with `transmutator`.
+
+Very short: `transmutator` tries to fill a gap in deployment stack:
+
+* Provisioners such as `Puppet`, `Chef` or `Salt` are fine to describe states.
+  But they doesn't always fit for upgrades, cleanup or downgrades.
+
+* Frameworks such as `Django` have their own database migration tools. But
+  migrations are not just a matter of databases, and can involve orchestration
+  between several components in the stack (i.e. not limited to `Django`).
+
+
+.. rubric:: References
+
+.. target-notes::
+

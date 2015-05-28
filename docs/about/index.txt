@@ -1,0 +1,14 @@
+##################
+About transmutator
+##################
+
+This section is about the project itself.
+
+.. toctree::
+   :titlesonly:
+
+   vision
+   alternatives
+   license
+   authors
+   changelog
