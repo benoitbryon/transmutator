@@ -12,4 +12,4 @@ pip:
 
 .. code:: sh
 
-   pip install git+https://github.com/benoitbryon/transmutator.git#egg=transmutator
+   pip install transmutator

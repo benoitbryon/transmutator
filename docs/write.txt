@@ -1,0 +1,79 @@
+###############
+Write mutations
+###############
+
+Here are the basics to create new mutations.
+
+
+**************************
+Create directory structure
+**************************
+
+``transmute`` command reads mutations in filesystem. By default in
+:file:`mutations/` directory relative to current working directory.
+
+``transmute`` collects executable files as follows:
+
+* ``mutations/recurrent/*`` are "recurrent" mutations. They will be executed
+  for each release.
+
+* ``mutations/development/*`` are "in-development" mutations. The "development"
+  release is a special one. It will always be executed last, and
+  "in-development" mutations will always be executed backward then forward.
+
+* ``mutations/*/*`` are mutations within a "release".
+
+* ``mutations/*`` are mutations without a "release".
+
+Here is a sample directory layout (from the :doc:`demo`):
+
+.. code:: text
+
+   ├── 0001_hello_world.sh
+   ├── 0002_hello_world.py
+   ├── 1.0
+   │   └── 0093_print_version.sh
+   ├── 1.1
+   │   └── 0060_print_version.sh
+   ├── development
+   │   └── 0077_refactoring.py
+   └── recurrent
+       └── 0050_syncdb.sh
+
+
+******************************
+Mutations are executable files
+******************************
+
+``transmute`` command collects only executables. It means you can run any
+program (provided your system is compatible).
+
+It also means that you can attach data (images, json, ...) inside the
+:file:`mutations/` folder and use data within your mutations scripts.
+
+
+****
+bash
+****
+
+Here is a mutation script written in `bash`:
+
+.. literalinclude:: /../demo/mutations/0001_hello_world.sh
+   :language: bash
+
+Since this script doesn't handle arguments, its content will be executed for
+both forward and backward operations.
+
+
+******
+Python
+******
+
+Here is a mutation script written in `Python`:
+
+.. literalinclude:: /../demo/mutations/0002_hello_world.py
+   :language: python
+
+As you can see, this script takes advantage of `transmutator` as a Python
+library. The :class:`AtomicMutation` instances are callables that run either
+:meth:`forward` or :meth:`backward` method depending on command-line arguments.

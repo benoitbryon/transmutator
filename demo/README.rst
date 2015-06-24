@@ -1,6 +1,6 @@
-######################
-Let's try transmutator
-######################
+####
+Demo
+####
 
 ``demo/mutations`` folder in `code repository`_ contains sample mutations to
 illustrate usage of `transmutator`.
@@ -25,4 +25,5 @@ illustrate usage of `transmutator`.
 
 .. target-notes::
 
-.. _`code repository`: https://github.com/benoitbryon/transmutator/
+.. _`code repository`:
+   https://github.com/benoitbryon/transmutator/tree/master/demo/

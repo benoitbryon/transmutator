@@ -1,0 +1,22 @@
+#############
+Run mutations
+#############
+
+Here are explanations about usage of the ``transmute`` command.
+
+.. code:: console
+
+   $ transmute --help
+   usage: /mnt/data/web/transmutator/env/bin/transmute [-h] [--version]
+
+   Collect and run mutations.
+
+   Mutations are executable files that live in 'mutations'
+   folder, relative to current working directory.
+
+   A 'var/transmutator' folder will be created to manage
+   index of mutations.
+
+   optional arguments:
+     -h, --help  show this help message and exit
+     --version   show program's version number and exit
