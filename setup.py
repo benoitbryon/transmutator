@@ -52,7 +52,7 @@ KEYWORDS = [
 PACKAGES = [NAME.replace('-', '_')]
 REQUIREMENTS = [
     'setuptools',
-    'xal',
+    'xal[ssh,local]',
 ]
 ENTRY_POINTS = {
     'console_scripts': [

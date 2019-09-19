@@ -1,0 +1,83 @@
+##################
+Ordering mutations
+##################
+
+This document provides details about orchestration, a.k.a. how ``transmute``
+command orders mutations.
+
+
+*****************************
+Latest mutation is the cursor
+*****************************
+
+`transmutator` remembers the mutations that have been applied. So the latest
+one is the reference "cursor". Moving forward or backward will be done from the
+latest mutation.
+
+The ``--status`` option shows the latest mutation.
+
+.. code-block:: console
+
+   $> transmute --status
+   RELEASE: None
+   MUTATION: None
+
+   $> transmute 1.0
+   RELEASE 
+   --> FORWARD 0001_hello_world.sh
+   --> FORWARD 0002_hello_world.py
+   --> FORWARD recurrent/0050_syncdb.sh
+   RELEASE 1.0
+   --> FORWARD recurrent/0050_syncdb.sh
+   --> FORWARD 1.0/0093_print_version.sh
+
+   $> transmute --status
+   RELEASE: 1.0
+   MUTATION: 1.0/0093_print_version.sh
+
+
+*********************************
+Mutations are grouped by releases
+*********************************
+
+Releases are ordered as follow:
+
+1. "no name" release, i.e. mutations that are not explicitely in a release.
+2. releases by alphabetical order.
+3. "development" special release is always at the end.
+
+The mutations in special "recurrent" release are run during every release, as
+if they were part of the release.
+
+As an example, :doc:`demo` has releases ordered as follows:
+
+* "no name"
+* 1.0
+* 1.1
+* development
+
+
+*************************************************
+In a release, mutations are sorted alphabetically
+*************************************************
+
+It's a good idea to prefix mutations with digits, so that ordering is explicit.
+
+
+************************************************
+Recurrent mutations are applied in every release
+************************************************
+
+As an example, in :doc:`demo`:
+
+
+*****************************************************
+Development release is applied backward, then forward
+*****************************************************
+
+When it's time to apply special "development" release:
+
+* first, the previous "development" release is rollbacked. Mutations that have
+  previously been applied are run backward.
+
+* then, available mutations in "development" release are applied forward.

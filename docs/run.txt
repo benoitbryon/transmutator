@@ -4,6 +4,13 @@ Run mutations
 
 Here are explanations about usage of the ``transmute`` command.
 
+
+******************
+Read included help
+******************
+
+``transmute --help`` (or ``transmute -h``) displays command's help.
+
 .. code:: console
 
    $ transmute --help
@@ -20,3 +27,28 @@ Here are explanations about usage of the ``transmute`` command.
    optional arguments:
      -h, --help  show this help message and exit
      --version   show program's version number and exit
+
+
+*****************
+Collect mutations
+*****************
+
+If you want to see what which mutations are about to be collected
+but don't want to run them, use the ``--collect`` option.
+
+.. code:: console
+
+   $ transmute --collect
+   RELEASE /
+   FORWARD 0001_hello_world.sh
+   FORWARD 0002_hello_world.py
+   FORWARD recurrent/0050_syncdb.sh
+   RELEASE 1.0/
+   FORWARD recurrent/0050_syncdb.sh
+   FORWARD 1.0/0093_print_version.sh
+   RELEASE 1.1/
+   FORWARD recurrent/0050_syncdb.sh
+   FORWARD 1.1/0060_print_version.sh
+   RELEASE development/
+   BACKWARD development/0077_refactoring.py
+   FORWARD development/0077_refactoring.py
